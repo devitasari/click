@@ -1,5 +1,6 @@
 <template>
   <div>
+      <router-view/>
                 <div class="container" style="display: flex; flex-wrap: wrap;">
                 <div style="width: 23%" class="mx-2" v-for="item in items" :key="item.id">
                 <div class="" style="" >
@@ -16,11 +17,9 @@
                                 <b-card-text>
                                 <b>Rp.{{ item.price }}</b>
                                 <br>
-                                <b>Stock: {{ item.stock }}</b>
-                                <br>
-                                {{ item.description }}
+                                <router-link :to="`/detail/${item._id}`">Detail</router-link>
                                 </b-card-text>
-                                <b-button @click="addToCart(item._id)" variant="dark" class="mr-1"><i class="fas fa-cart-plus"></i></b-button>
+                                <b-button v-if="!isAdmin" @click="addToCart(item._id)" variant="dark" class="mr-1"><i class="fas fa-cart-plus"></i></b-button>
                                 <b-button v-if="isAdmin" @click="deleteItem(item._id)" variant="dark" class="mr-1"><i class="far fa-trash-alt"></i></b-button>
                                 <b-button v-if="isAdmin" data-toggle="modal" data-target="#editForm" @click="saveId(item._id)" variant="dark" class="mr-1"><i class="fas fa-pencil-alt"></i></b-button>
                             </b-card>
@@ -96,7 +95,7 @@ export default {
         }
       })
         .then(data => {
-          this.$router.push('cart')
+          this.$router.push('/cart')
         })
         .catch(console.log)
     },

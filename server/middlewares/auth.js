@@ -35,6 +35,7 @@ function authCustomer(req, res, next) {
 }
 
 function authAdmin(req, res, next) {
+  console.log('masuk auth admin')
   try {
     if (req.loggedUser.role == 'admin') {
       next()

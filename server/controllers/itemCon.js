@@ -29,6 +29,7 @@ class itemController {
         const { id } = req.params
         Item.findById(id)
             .then((item) => {
+                console.log(item)
                 if (!item) throw ({message: 'data not found'})
                 res.status(200).json({item})
             }).catch(next)

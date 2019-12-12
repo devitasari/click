@@ -13,8 +13,10 @@
 //                 console.log('testing: delete data user succes!');  
 //             })
 //             .catch(console.log)
+//             .finally(_=> {
+//                 done()
+//             })
 //     }
-//     done()
 // })
 
 
@@ -32,6 +34,7 @@
 //                 })
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
+//                     console.log(res)
 //                     expect(res).to.have.status(201)
 //                     expect(res.body).to.be.an('object').to.have.any.keys('newUser','message')
 //                     expect(res.body.message).to.equal('success sign up')
@@ -85,7 +88,7 @@
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(400)
 //                     expect(res.body.error).to.be.an('array').that.includes('invalid email format')
-//                     done()
+//                 done()
 //                 })
 //             })
 //             it ('should send error with 400 status code because email already registered', function(done) {
@@ -101,7 +104,7 @@
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(400)
 //                     expect(res.body.error).to.be.an('array').that.includes('email already registered')
-//                     done()
+//                 done()
 //                 })
 //             })
 //             it ('should send error with 400 status code because missing password value', function(done) {
@@ -117,7 +120,7 @@
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(400)
 //                     expect(res.body.error).to.be.an('array').that.includes('password required')
-//                     done()
+//                 done()
 //                 })
 //             })
 //             it ('should send error with 400 status code because password less than 8 char', function(done){
@@ -133,7 +136,7 @@
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(400)
 //                     expect(res.body.error).to.be.an('array').that.includes('password min 8 char')
-//                     done()
+//                 done()
 //                 })
 //             })
 //             it ('should send error with 400 status code because missing all value', function(done){
@@ -149,7 +152,7 @@
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(400)
 //                     expect(res.body.error).to.be.an('array').that.includes("name is required", "email is required", " invalid email format", "email already registered", "password required", "password min 8 char")
-//                     done()
+//                 done()
 //                 })
 //             })
 //         })
@@ -166,14 +169,14 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(200)
-//                     expect(res.body).to.be.an('object').to.have.any.keys('message','token', user)
+//                     expect(res.body).to.be.an('object').to.have.any.keys('message','token', 'user')
 //                     expect(res.body.message).to.equal('success sign in')
-//                     done()
+//                 done()
 //                 })
 //             })
 //         })
 //         describe('errors process', function() {
-//             it('should send error with status code 400 because missing identity value', function(done) {
+//             it('should send error with status code 500 because missing identity value', function(done) {
 //                 chai.request(app)
 //                 .post('/click/users/signin')
 //                 .send({
@@ -182,12 +185,12 @@
 //                 })
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes("identity required")
-//                     done()
+//                 done()
 //                 })
 //             })
-//             it('should send error with status code 400 because missing password value', function(done) {
+//             it('should send error with status code 500 because missing password value', function(done) {
 //                 chai.request(app)
 //                 .post('/click/users/signin')
 //                 .send({
@@ -196,12 +199,12 @@
 //                 })
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes("password required")
-//                     done()
+//                 done()
 //                 })
 //             })
-//             it('should send error with status code 400 because identity invalid', function(done) {
+//             it('should send error with status code 500 because identity invalid', function(done) {
 //                 chai.request(app)
 //                 .post('/click/users/signin')
 //                 .send({
@@ -210,12 +213,12 @@
 //                 })
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes("invalid email/password")
-//                     done()
+//                 done()
 //                 })
 //             })
-//             it('should send error with status code 400 because password invalid', function(done) {
+//             it('should send error with status code 500 because password invalid', function(done) {
 //                 chai.request(app)
 //                 .post('/click/users/signin')
 //                 .send({
@@ -224,9 +227,9 @@
 //                 })
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes("invalid email/password")
-//                     done()
+//                 done()
 //                 })
 //             })
 //         })        

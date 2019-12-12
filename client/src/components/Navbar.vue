@@ -6,14 +6,17 @@
                     <b-nav-item>
                         <router-link to="/"><img src="../assets/logo.png" width="30"></router-link>
                     </b-nav-item>
-                    <b-nav-item v-if="isLogin">
+                    <b-nav-item v-if="isLogin && !isAdmin">
                         <router-link to="/cart" style="color:rgba(255, 255, 255, 0.5);">Cart</router-link>
                     </b-nav-item>
-                    <b-nav-item v-if="isLogin">
+                    <b-nav-item v-if="isLogin && !isAdmin">
                         <router-link to="/transaction" style="color:rgba(255, 255, 255, 0.5);">Transaction</router-link>
                     </b-nav-item>
                     <b-nav-item v-if="isLogin && isAdmin">
                         <router-link to="/additem" style="color:rgba(255, 255, 255, 0.5);">Add Item</router-link>
+                    </b-nav-item>
+                    <b-nav-item v-if="isLogin && isAdmin">
+                        <router-link to="/usertransaction" style="color:rgba(255, 255, 255, 0.5);">User Transaction</router-link>
                     </b-nav-item>
                 </b-navbar-nav>
                 <b-navbar-nav>
@@ -44,7 +47,7 @@ export default {
       this.$store
         .dispatch('logout')
         .then(() => {
-          this.$router.push('signin')
+          this.$router.push('/signin')
         })
         .catch(err => {
           console.log(err)

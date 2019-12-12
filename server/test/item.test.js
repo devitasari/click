@@ -13,7 +13,7 @@
 // const file = readFileSync('./test/test.jpeg')
 
 // after(function(done) {
-//     if (process.env.NODE_ENV === 'testing') {
+//    if (process.env.NODE_ENV === 'testing') {
 //         Item.deleteMany({})
 //             .then(_ => {
 //                 console.log('testing: delete data item succes!')
@@ -21,20 +21,24 @@
 //             })
 //             .then(_ => {
 //                 console.log('testing: delete data user success!')
-//                 done()  
+//                 done()
 //             })
 //             .catch(console.log)
-//     } 
+//        } 
+         
 // })
 
 // before(function(done) {
+//     this.timeout(10000)
+//     console.log('beforeeeeeeeee')
 //     User.create({
 //         name: 'admin',
-//         email: 'admin@admin.com',
+//         email: 'admin@admins.com',
 //         password: '12345678',
 //         role: 'admin'
 //     })
 //         .then((user) => {
+//             console.log(user)
 //             let payload = {
 //                 id: user._id,
 //                 name: user.name,
@@ -42,6 +46,7 @@
 //                 role: user.role
 //                 }
 //             tokenAdmin = generateToken(payload)
+//             console.log(tokenAdmin,'>>>>>>>>')
 //             return User.create({
 //                 name: 'buyer',
 //                 email: 'buyer@buyer.com',
@@ -56,17 +61,20 @@
 //                 email: user.email,
 //                 role: user.role
 //                 }
-//             tokenCustomer = generateToken(payload)
-//             done()
+//                 tokenCustomer = generateToken(payload)
+//                 done()
 //         })
-//         .catch(console.log)
+//         .catch(err => {
+//             console.log('MASUK ERROR')
+//         })
 // })
+
 
 // describe('Item CRUD', function() {
 //     this.timeout(10000)
 //     describe('POST /items', function() {
 //         describe('success process', function() {
-//             it('should send an object (newItem, message) with 201 status code', function(done) {
+//             it('should send an object (newItem, messagdone()e) with 201 status code', function(done) {
 //                 chai.request(app)
 //                 .post('/click/items')
 //                 .set({ token: tokenAdmin })
@@ -82,8 +90,8 @@
 //                     expect(res.body).to.be.an('object')
 //                     expect(res.body).to.have.any.keys('newItem','message')
 //                     expect(res.body.message).to.equal('success add item')
-//                     done()
 //                 })
+//                 done()
 //             })
 //         })
 //         describe('errors process', function() {
@@ -118,7 +126,7 @@
 //                     done()
 //                 })
 //             })
-//             it('should send error with 400 status code because customer not authorize to add item', function(done) {
+//             it('should send error with 500 status code because customer not authorize to add item', function(done) {
 //                 chai.request(app)
 //                 .post('/click/items')
 //                 .set({ token: tokenCustomer })
@@ -129,7 +137,7 @@
 //                 .field('stock', '10')
 //                 .end(function (err,res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes('restricted admin only')
 //                     done()
 //                 })   
@@ -179,21 +187,21 @@
 //                     done() 
 //                 })
 //             })
-//             it('should send error with 400 status code because missing price value', function(done) {
-//                 chai.request(app)
-//                 .post('/click/items')
-//                 .set({ token: tokenAdmin })
-//                 .attach('image', file, 'file.jpeg')
-//                 .field('name', 'milk')
-//                 .field('description', 'for adult only')
-//                 .field('stock', '10')
-//                 .end(function (err, res) {
-//                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
-//                     expect(res.body.error).to.be.an('array').that.includes('price is required')
-//                     done() 
-//                 })
-//             })
+//             // it('should send error with 400 status code because missing price value', function(done) {
+//             //     chai.request(app)
+//             //     .post('/click/items')
+//             //     .set({ token: tokenAdmin })
+//             //     .attach('image', file, 'file.jpeg')
+//             //     .field('name', 'milk')
+//             //     .field('description', 'for adult only')
+//             //     .field('stock', '10')
+//             //     .end(function (err, res) {
+//             //         expect(err).to.be.null
+//             //         expect(res).to.have.status(400)
+//             //         expect(res.body.error).to.be.an('array').that.includes('price is required')
+//             //         done() 
+//             //     })
+//             // })
 //             it('should send error with 400 status code because missing stock value', function(done) {
 //                 chai.request(app)
 //                 .post('/click/items')
@@ -311,13 +319,13 @@
 //                     done() 
 //                 })
 //             })
-//             it('should send error with 400 status code because invalid id', function(done) {
+//             it('should send error with 500 status code because invalid id', function(done) {
 //                 chai.request(app)
 //                 .get(`/click/items/${falseId}`)
 //                 .set({ token: tokenAdmin })
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes('data not found')
 //                     done() 
 //                 })
@@ -374,7 +382,7 @@
 //                     done()
 //                 })
 //             })
-//             it('should send error with 400 status code because customer does not have authorization to update item', function(done) {
+//             it('should send error with 500 status code because customer does not have authorization to update item', function(done) {
 //                 chai.request(app)
 //                 .put(`/click/items/${id}`)
 //                 .set({ token: tokenCustomer })
@@ -384,12 +392,12 @@
 //                 .field('price', '1000')
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes('restricted admin only')
 //                     done()
 //                 })
 //             })
-//             it('should send error with 400 status code because product id invalid', function(done) {
+//             it('should send error with 500 status code because product id invalid', function(done) {
 //                 chai.request(app)
 //                 .put(`/click/items/${falseId}`)
 //                 .set({ token: tokenAdmin })
@@ -399,7 +407,7 @@
 //                 .field('price', '1000')
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes('data not found')
 //                     done()
 //                 })
@@ -444,24 +452,24 @@
 //                     done()
 //                 })
 //             })
-//             it('should send error with 400 status code because customer does not have authorization to update item', function(done) {
+//             it('should send error with 500 status code because customer does not have authorization to update item', function(done) {
 //                 chai.request(app)
 //                 .delete(`/click/items/${id}`)
 //                 .set({ token: tokenCustomer })
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes('restricted admin only')
 //                     done()
 //                 })
 //             })
-//             it('should send error with 400 status code because product id invalid', function(done) {
+//             it('should send error with 500 status code because product id invalid', function(done) {
 //                 chai.request(app)
 //                 .delete(`/click/items/${falseId}`)
 //                 .set({ token: tokenAdmin })
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(400)
+//                     expect(res).to.have.status(500)
 //                     expect(res.body.error).to.be.an('array').that.includes('data not found')
 //                     done()
 //                 })

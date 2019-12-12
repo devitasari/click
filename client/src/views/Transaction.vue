@@ -11,21 +11,31 @@
         <table class="table">
         <thead class="thead-dark">
           <tr>
+            <th scope="col">Date</th>
             <th scope="col">Item</th>
-            <th scope="col">Price per Item</th>
-            <th scope="col">Price Total</th>
             <th scope="col">Qty</th>
+            <th scope="col">Sub Price</th>
+            <th scope="col">Transfer Fee</th>
+            <th scope="col">Total Price</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(cart) in carts" :key="cart.id">
-            <th scope="row">{{ cart.itemId.name }}</th>
-            <td>{{ cart.itemId.price }}</td>
-            <td>{{ cart.subPrice }}</td>
+            <td> {{ cart.updatedAt.split('T')[0] }}</td>
+            <td scope="row"><b>{{ cart.itemId.name }}</b>
+              <br>
+              {{ cart.itemId.price }}
+              <br>
+              <img :src="`${cart.itemId.image}`" alt="" border=3 height=200 width=150>
+            </td>
             <td>{{ cart.qty }}</td>
+            <td>{{ cart.subPrice }}</td>
+            <td>{{ cart.ongkir }}</td>
+            <td>{{ cart.subPrice + cart.ongkir }}</td>
             <td>
             <button type="button" @click="deleteCart(cart._id)" class="btn btn-secondary mr-1">Delete</button>
+            <button v-if="cart.status == 'checkout'" type="button" @click="delivered(cart._id)" class="btn btn-secondary mr-1">Delivered</button>
             </td>
           </tr>
         </tbody>
@@ -46,10 +56,26 @@ export default {
   data () {
     return {
       carts: [],
-      id: ''
+      id: '',
     }
   },
   methods: {
+    delivered(id) {
+      myAxios({
+        method: 'put',
+        url: `/click/carts/confirm/${id}`,
+        data: {
+          status: 'delivered'
+        },
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      })
+      .then(({data}) => {
+        this.fetchCart()
+      })
+      .catch(console.log)
+    },
     fetchCart () {
       myAxios({
         method: 'get',

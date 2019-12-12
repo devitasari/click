@@ -5,10 +5,12 @@ const { generateToken, verifyToken} = require('../helpers/jwt')
 class UserController {
 
     static register(req, res, next) {
+        console.log(req.body)
         User.create({
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
+            role: req.body.role
         })
             .then((newUser) => {
                 res.status(201).json( {newUser, message: 'success sign up'})

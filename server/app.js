@@ -1,4 +1,7 @@
-if (process.env.NODE_ENV) require('dotenv').config()
+if (process.env.NODE_ENV){
+    console.log("masukkkkkk")
+    require('dotenv').config()
+} 
 
 //connect database
 require('./config/mongoose')

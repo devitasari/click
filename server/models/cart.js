@@ -18,8 +18,14 @@ const cartSchema = new Schema({
         type: Number,
     },
     status: {
-        type: Boolean,
-        default: false
+        type: String,
+        default: 'pending'
+    },
+    ongkir: {
+        type: Number
+    },
+    totalPrice: {
+        type: Number
     }
 }, { timestamps: true })
 
