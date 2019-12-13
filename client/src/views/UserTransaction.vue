@@ -12,10 +12,9 @@
         <thead class="thead-dark">
           <tr>
             <th scope="col">Date</th>
-            <th scope="col">Item</th>
-            <th scope="col">Qty</th>
+            <th scope="col">Items</th>
             <th scope="col">Sub Price</th>
-            <th scope="col">Transfer Fee</th>
+            <th scope="col">Delivery Fee</th>
             <th scope="col">Total Price</th>
             <th scope="col">Customer</th>
             <th scope="col">Status</th>
@@ -24,16 +23,18 @@
         <tbody>
           <tr v-for="(cart) in carts" :key="cart.id">
             <td>{{ cart.updatedAt.split('T')[0] }}</td>
-            <td scope="row"><b>{{ cart.itemId.name }}</b>
+            <td scope="row">
+              <div v-for="(item,i) in cart.itemId" :key="i">
+              <b>{{ item.name }}</b>
               <br>
-              Rp.{{ cart.itemId.price }}
+              Rp.{{ item.price }}
               <br>
-              <img :src="`${cart.itemId.image}`" alt="" border=3 height=200 width=150>
+              <img :src="`${item.image}`" alt="" border=3 height=200 width=150>
+              </div>
             </td>
-            <td>{{ cart.qty }}</td>
-            <td>Rp.{{ cart.subPrice }}</td>
+            <td>Rp.{{ cart.price }}</td>
             <td>Rp.{{ cart.ongkir }}</td>
-            <td>Rp.{{ cart.subPrice + cart.ongkir }}</td>
+            <td>Rp.{{ cart.totalPrice }}</td>
             <td>{{ cart.userId.name }} <br><i>{{ cart.userId.email}}</i></td>
             <td>{{ cart.status }}</td>
           </tr>
@@ -52,7 +53,7 @@ export default {
   components: {
     Navbar
   },
-  data() {
+  data () {
     return {
       carts: ''
     }
@@ -61,7 +62,7 @@ export default {
     fetchCart () {
       myAxios({
         method: 'get',
-        url: '/click/carts',
+        url: '/click/carts/transaction/admin',
         headers: {
           token: localStorage.getItem('token')
         }
@@ -70,10 +71,12 @@ export default {
           this.carts = data.carts
           console.log(data.carts)
         })
-        .catch(console.log)
-    },
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
+        })
+    }
   },
-  created() {
+  created () {
     this.fetchCart()
   }
 }

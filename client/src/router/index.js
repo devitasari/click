@@ -17,7 +17,7 @@ const routes = [
   { path: '/additem', name: 'additem', component: AddItem },
   { path: '/cart', name: 'cart', component: Cart },
   { path: '/transaction', name: 'transaction', component: Transaction },
-  { path: '/usertransaction', name: 'usertransaction', component: UserTransaction},
+  { path: '/usertransaction', name: 'usertransaction', component: UserTransaction },
   { path: '/',
     name: 'home',
     component: Home,

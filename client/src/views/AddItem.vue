@@ -102,7 +102,11 @@ export default {
           this.$router.push('/')
         })
         .catch(err => {
-          console.log(err)
+          let error = ``
+          for (let i = 0; i < err.length; i++) {
+            error += err[i] + `, `
+          }
+          this.$swal('error', error, 'error')
         })
     },
     onReset (evt) {

@@ -97,7 +97,13 @@ export default {
         .then(data => {
           this.$router.push('/cart')
         })
-        .catch(console.log)
+        .catch(err => {
+          let error = ``
+          for (let i = 0; i < err.length; i++) {
+            error += err[i] + `, `
+          }
+          this.$swal('error', error, 'error')
+        })
     },
     deleteItem (id) {
       console.log(id, 'ini id')
@@ -111,7 +117,13 @@ export default {
         .then(data => {
           this.$store.dispatch('fetchItems')
         })
-        .catch(console.log)
+        .catch(err => {
+          let error = ``
+          for (let i = 0; i < err.length; i++) {
+            error += err[i] + `, `
+          }
+          this.$swal('error', error, 'error')
+        })
     },
     saveId (id) {
       this.id = id
@@ -134,7 +146,13 @@ export default {
           this.id = ''
           this.$store.dispatch('fetchItems')
         })
-        .catch(console.log)
+        .catch(err => {
+          let error = ``
+          for (let i = 0; i < err.length; i++) {
+            error += err[i] + `, `
+          }
+          this.$swal('error', error, 'error')
+        })
         .always($('#editForm').modal('hide'))
     }
   }

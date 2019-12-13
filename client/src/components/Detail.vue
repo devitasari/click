@@ -41,7 +41,9 @@ export default {
         .then(({ data }) => {
           this.item = data.item
         })
-        .catch(console.log)
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
+        })
     }
   },
   watch: {

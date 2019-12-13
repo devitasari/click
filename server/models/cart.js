@@ -20,12 +20,6 @@ const cartSchema = new Schema({
     status: {
         type: String,
         default: 'pending'
-    },
-    ongkir: {
-        type: Number
-    },
-    totalPrice: {
-        type: Number
     }
 }, { timestamps: true })
 

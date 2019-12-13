@@ -1,41 +1,43 @@
 <template>
   <div class="Cart">
       <Navbar/>
-      <br>
-      <br>
-      <br>
-      <br>
-      <h2 style="text-align: center;">Cart</h2>
-      <br>
-      <div class="container">
-        <table class="table">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col">Item</th>
-            <th scope="col">Price per Item</th>
-            <th scope="col">Price Total</th>
-            <th scope="col">Qty</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(cart) in carts" :key="cart.id">
-            <th scope="row">
-              {{ cart.itemId.name }}
-              <br>
-              <img :src="`${cart.itemId.image}`" alt="" border=3 height=200 width=150>
-            </th>
-            <td>{{ cart.itemId.price }}</td>
-            <td>{{ cart.subPrice }}</td>
-            <td>{{ cart.qty }}</td>
-            <td>
-            <button type="button" class="btn btn-secondary mr-1" data-toggle="modal" data-target="#editForm" @click="saveId(cart._id)">Edit</button>
-            <button type="button" class="btn btn-secondary mr-1" data-toggle="modal" data-target="#ongkirForm" @click="saveId(cart._id)">Checkout</button>
-            <button type="button" @click="deleteCart(cart._id)" class="btn btn-secondary mr-1">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-        </table>
+      <div class="cart">
+        <br>
+        <br>
+        <br>
+        <br>
+        <h2 style="text-align: center;">Cart</h2>
+        <br>
+        <div class="container">
+          <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Price per Item</th>
+              <th scope="col">Price Total</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(cart) in carts" :key="cart.id">
+              <th scope="row">
+                {{ cart.itemId.name }}
+                <br>
+                <img :src="`${cart.itemId.image}`" alt="" border=3 height=200 width=150>
+              </th>
+              <td>{{ cart.itemId.price }}</td>
+              <td>{{ cart.subPrice }}</td>
+              <td>{{ cart.qty }}</td>
+              <td>
+              <button type="button" class="btn btn-secondary mr-1" data-toggle="modal" data-target="#editForm" @click="saveId(cart._id)">Edit</button>
+              <button type="button" @click="deleteCart(cart._id)" class="btn btn-secondary mr-1">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+          </table>
+          <button v-if="carts.length != 0" class="btn btn-secondary mr-1" data-toggle="modal" data-target="#ongkirForm" @click="saveId">Confirm</button>
+        </div>
       </div>
       <!-- Modal -->
       <div class="modal fade" id="editForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -78,7 +80,7 @@
               <label>City</label>
                 <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" v-model="selected">
                   <option selected>Choose...</option>
-                  <option 
+                  <option
                   v-bind:value="{id: city.city_id}"
                   v-for="(city, i) in cities" :key="i">{{ city.city_name}}</option>
                 </select>
@@ -90,7 +92,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <button type="button" @click="trueCart" class="btn btn-primary" data-dismiss="modal">Checkout</button>
+              <button type="button" @click="createTransaction" class="btn btn-primary" data-dismiss="modal">Checkout</button>
             </div>
           </div>
         </div>
@@ -114,10 +116,60 @@ export default {
       id: '',
       cities: [],
       selected: '',
-      ongkir: ''
+      ongkir: '',
+      items: ''
     }
   },
   methods: {
+    createTransaction () {
+      // validasi ketersediaan barang dengan promise all
+      let requests = []
+
+      for (let i = 0; i < this.carts.length; i++) {
+        requests.push(
+          myAxios({
+            method: 'put',
+            url: `/click/carts/${this.carts[i]._id}`,
+            data: {
+              status: 'checkout'
+            },
+            headers: {
+              token: localStorage.getItem('token')
+            }
+          })
+        )
+      }
+
+      Promise.all(requests)
+        .then(results => {
+          console.log(this.carts, '!!!!!!!!!!!!!!!')
+          // =====================================================================================
+          let price = 0
+          for (let i = 0; i < this.carts.length; i++) {
+            price = price + this.carts[i].subPrice
+            this.items = this.items + this.carts[i].itemId._id + ','
+          }
+          return myAxios({
+            method: 'post',
+            url: '/click/carts/transaction',
+            headers: {
+              token: localStorage.getItem('token')
+            },
+            data: {
+              items: this.items, // berisi kumpulan id item
+              ongkir: this.ongkir,
+              price
+            }
+          })
+        })
+      // =====================================================================================
+        .then(({ data }) => {
+          this.fetchCart()
+        })
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
+        })
+    },
     fetchCart () {
       myAxios({
         method: 'get',
@@ -130,7 +182,9 @@ export default {
           this.carts = data.carts
           console.log(data.carts)
         })
-        .catch(console.log)
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
+        })
     },
     deleteCart (id) {
       myAxios({
@@ -144,25 +198,9 @@ export default {
           console.log(data.message)
           this.fetchCart()
         })
-        .catch(console.log)
-    },
-    trueCart () {
-      myAxios({
-        method: 'put',
-        url: `/click/carts/${this.id}`,
-        data: {
-          status: 'checkout',
-          ongkir: this.ongkir
-        },
-        headers: {
-          token: localStorage.getItem('token')
-        }
-      })
-        .then(({ data }) => {
-          console.log(data.message)
-          this.fetchCart()
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
         })
-        .catch(console.log)
     },
     editQty () {
       myAxios({
@@ -180,12 +218,13 @@ export default {
           console.log(data.message)
           this.fetchCart()
         })
-        .catch(console.log)
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
+        })
         .always($('#editForm').modal('hide'))
     },
     saveId (id) {
-      alert('uhuy')
-      this.id = id
+      if (id) this.id = id
       myAxios({
         method: 'GET',
         url: '/click/carts/city',
@@ -193,17 +232,19 @@ export default {
           token: localStorage.getItem('token')
         }
       })
-      .then(({data}) => {
+        .then(({ data }) => {
           this.cities = data.rajaongkir.results
-      })
-      .catch(console.log)
+        })
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
+        })
     }
   },
   created () {
     this.fetchCart()
   },
   watch: {
-    selected: function(val) {
+    selected: function (val) {
       myAxios({
         method: 'GET',
         url: `click/carts/ongkir/${this.selected.id}`,
@@ -211,10 +252,12 @@ export default {
           token: localStorage.getItem('token')
         }
       })
-      .then(({data}) => {
-        console.log(data.rajaongkir.results[0].costs[1].cost[0].value)
-        this.ongkir = data.rajaongkir.results[0].costs[1].cost[0].value
-      })
+        .then(({ data }) => {
+          this.ongkir = data.rajaongkir.results[0].costs[1].cost[0].value
+        })
+        .catch(err => {
+          this.$swal('error', err.response.data.error[0].message, 'error')
+        })
     }
   }
 
@@ -226,4 +269,3 @@ export default {
   top: 25vh !important;
 }
 </style>
-

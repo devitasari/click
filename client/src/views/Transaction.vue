@@ -12,10 +12,9 @@
         <thead class="thead-dark">
           <tr>
             <th scope="col">Date</th>
-            <th scope="col">Item</th>
-            <th scope="col">Qty</th>
+            <th scope="col">Items</th>
             <th scope="col">Sub Price</th>
-            <th scope="col">Transfer Fee</th>
+            <th scope="col">Delivery Fee</th>
             <th scope="col">Total Price</th>
             <th scope="col">Action</th>
           </tr>
@@ -23,19 +22,20 @@
         <tbody>
           <tr v-for="(cart) in carts" :key="cart.id">
             <td> {{ cart.updatedAt.split('T')[0] }}</td>
-            <td scope="row"><b>{{ cart.itemId.name }}</b>
+            <td scope="row">
+              <div v-for="(item,i) in cart.itemId" :key="i">
+              <b>{{ item.name }}</b>
               <br>
-              {{ cart.itemId.price }}
+              Rp.{{ item.price }}
               <br>
-              <img :src="`${cart.itemId.image}`" alt="" border=3 height=200 width=150>
+              <img :src="`${item.image}`" alt="" border=3 height=200 width=150>
+              </div>
             </td>
-            <td>{{ cart.qty }}</td>
-            <td>{{ cart.subPrice }}</td>
+            <td>{{ cart.price }}</td>
             <td>{{ cart.ongkir }}</td>
-            <td>{{ cart.subPrice + cart.ongkir }}</td>
+            <td>{{ cart.totalPrice }}</td>
             <td>
-            <button type="button" @click="deleteCart(cart._id)" class="btn btn-secondary mr-1">Delete</button>
-            <button v-if="cart.status == 'checkout'" type="button" @click="delivered(cart._id)" class="btn btn-secondary mr-1">Delivered</button>
+            <button v-if="cart.status == 'pending'" type="button" @click="delivered(cart._id)" class="btn btn-secondary mr-1">Received</button>
             </td>
           </tr>
         </tbody>
@@ -56,53 +56,48 @@ export default {
   data () {
     return {
       carts: [],
-      id: '',
+      id: ''
     }
   },
   methods: {
-    delivered(id) {
+    delivered (id) {
       myAxios({
         method: 'put',
-        url: `/click/carts/confirm/${id}`,
-        data: {
-          status: 'delivered'
-        },
+        url: `/click/carts/transaction/${id}`,
         headers: {
           token: localStorage.getItem('token')
         }
       })
-      .then(({data}) => {
-        this.fetchCart()
-      })
-      .catch(console.log)
+        .then(({ data }) => {
+          this.fetchCart()
+        })
+        .catch(err => {
+          let error = ``
+          for (let i = 0; i < err.length; i++) {
+            error += err[i] + `, `
+          }
+          this.$swal('error', error, 'error')
+        })
     },
     fetchCart () {
       myAxios({
         method: 'get',
-        url: '/click/carts/user/history',
+        url: '/click/carts/transaction',
         headers: {
           token: localStorage.getItem('token')
         }
       })
         .then(({ data }) => {
-          this.carts = data.carts
-          console.log(data.carts)
+          this.carts = data
+          console.log(data, '*****************')
         })
-        .catch(console.log)
-    },
-    deleteCart (id) {
-      myAxios({
-        method: 'delete',
-        url: `/click/carts/${id}`,
-        headers: {
-          token: localStorage.getItem('token')
-        }
-      })
-        .then(({ data }) => {
-          console.log(data.message)
-          this.fetchCart()
+        .catch(err => {
+          let error = ``
+          for (let i = 0; i < err.length; i++) {
+            error += err[i] + `, `
+          }
+          this.$swal('error', error, 'error')
         })
-        .catch(console.log)
     },
     saveId (id) {
       this.id = id

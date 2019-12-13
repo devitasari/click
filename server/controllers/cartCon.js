@@ -1,4 +1,4 @@
-const { Cart, User, Item } = require('../models')
+const { Cart, User, Item, Transaction } = require('../models')
 const axios = require('axios')
 
 class CartController {
@@ -40,19 +40,31 @@ class CartController {
     static create(req, res, next) {
         const itemId = req.params.id
         const qty = Number(req.body.qty)
-        let subPrice
+        let subPrice, itemPrice
         //qty validation
         Item.findById(itemId)
             .then(item => {
                 if (!item) throw ({message: 'data not found'})
                 if (item.stock < qty) throw ({message: 'stock less than qty'})
-                subPrice = item.price * qty
-                return Cart.create({
-                   userId: req.loggedUser.id,
-                   itemId,
-                   qty,
-                   subPrice 
-                })
+                //cek apakah barangnya sudah ada di cart
+                itemPrice = item.price
+                return Cart.findOne({userId: req.loggedUser.id, itemId})
+            })
+            .then(cart => {
+                //jika card nya ada, maka update quantity dan subPricenya
+                if (cart && cart.status == 'pending') {
+                    let newQty = cart.qty + 1
+                    subPrice = itemPrice * newQty
+                    return Cart.findByIdAndUpdate(cart._id, {qty: newQty, subPrice}, {new: true})
+                } else {
+                    subPrice = itemPrice * qty
+                    return Cart.create({
+                       userId: req.loggedUser.id,
+                       itemId,
+                       qty,
+                       subPrice 
+                    })
+                }
             })
             .then(newCart => {
                 res.status(201).json({newCart, message: 'succes add product to cart'})
@@ -60,7 +72,7 @@ class CartController {
     }
 
     static showAll(req, res, next) { //admin only
-        Cart.find()
+        Cart.find( {$or: [{status: 'checkout'},{status: 'delivered'}]} )
             .populate('itemId')
             .populate('userId')
             .exec(function (err, carts) {
@@ -120,7 +132,7 @@ class CartController {
             update[key] = req.body[key]
         }
         if (update.status) { //untuk update status dari pending menjadi checkout
-            Cart.findByIdAndUpdate(id, update)
+            Cart.findById(id)
                 .then(cart => {
                     if (!cart) throw ({message: 'data not found'})
                     qtyCheckout = cart.qty
@@ -130,9 +142,12 @@ class CartController {
                     if (item.stock - qtyCheckout < 0) throw ({message: 'current stock less than qty'})
                     let newQty = item.stock - qtyCheckout 
                     // let newPrice = item.subPrice + ongkir
-                    return Item.findByIdAndUpdate(item._id, { stock: newQty})
+                    return Item.findByIdAndUpdate(item._id, { stock: newQty}, {new: true})
                 })
-                .then(_ => {
+                .then(item => {
+                    return Cart.findByIdAndUpdate(id, update, {new: true})
+                })
+                .then(cart => {
                     res.status(200).json({message: 'checkout success'})
                 }).catch(next)     
         } else if (update.qty) { //untuk update qty

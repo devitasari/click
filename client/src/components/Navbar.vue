@@ -50,7 +50,7 @@ export default {
           this.$router.push('/signin')
         })
         .catch(err => {
-          console.log(err)
+          this.$swal('error', err, 'error')
         })
     }
   },
