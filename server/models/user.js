@@ -4,7 +4,10 @@ const { hashPassword, checkPassword } = require('../helpers/bcrypt')
 const userSchema = new Schema({
     name: {
         type: String,
-        required: [true, 'name is required']
+        required: [true, 'name is required'],
+        validate: [
+            {validator: isNameUnique, message: 'name already registered'}
+        ]
     },
     email: {
         type: String,
@@ -36,6 +39,14 @@ function isEmailUnique(value) {
       })
   }
 
+function isNameUnique(value) {
+    return User.findOne({ name: value })
+      .then(found => {
+        if (found) return false
+        else return true
+      })
+  }
+  
 //hashPassword
 userSchema.pre('save', function(next) {
     this.password = hashPassword(this.password)

@@ -48,9 +48,10 @@ class CartController {
                 if (item.stock < qty) throw ({message: 'stock less than qty'})
                 //cek apakah barangnya sudah ada di cart
                 itemPrice = item.price
-                return Cart.findOne({userId: req.loggedUser.id, itemId})
+                return Cart.findOne({userId: req.loggedUser.id, itemId, status: 'pending'})
             })
             .then(cart => {
+                console.log(cart)
                 //jika card nya ada, maka update quantity dan subPricenya
                 if (cart && cart.status == 'pending') {
                     let newQty = cart.qty + 1

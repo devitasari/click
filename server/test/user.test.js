@@ -10,7 +10,7 @@
 //     if (process.env.NODE_ENV === 'testing') {
 //         User.deleteMany()
 //             .then(_ => {
-//                 console.log('testing: delete data user succes!');  
+//                 console.log('testing: delete data user succes!');
 //             })
 //             .catch(console.log)
 //             .finally(_=> {
@@ -34,9 +34,12 @@
 //                 })
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     console.log(res)
 //                     expect(res).to.have.status(201)
 //                     expect(res.body).to.be.an('object').to.have.any.keys('newUser','message')
+//                     expect(res.body.newUser).to.be.an('object').to.have.any.keys('name','email','password','role')
+//                     expect(res.body.newUser.name).to.equal('test')
+//                     expect(res.body.newUser.email).to.equal('test@test.com')
+//                     expect(res.body.newUser.role).to.equal('customer')
 //                     expect(res.body.message).to.equal('success sign up')
 //                     done()
 //                 })
@@ -170,6 +173,9 @@
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(200)
 //                     expect(res.body).to.be.an('object').to.have.any.keys('message','token', 'user')
+//                     expect(res.body.user).to.be.an('object').to.have.any.keys('role','_id','name','email','password','createdAt','updatedAt')
+//                     expect(res.body.user.role).to.equal('customer')
+//                     expect(res.body.user.email).to.equal('test@test.com')
 //                     expect(res.body.message).to.equal('success sign in')
 //                 done()
 //                 })
@@ -186,7 +192,8 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes("identity required")
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('identity required')
 //                 done()
 //                 })
 //             })
@@ -200,7 +207,8 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes("password required")
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('password required')
 //                 done()
 //                 })
 //             })
@@ -214,7 +222,7 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes("invalid email/password")
+//                     expect(res.body.error[0].message).to.equal('invalid email/password')
 //                 done()
 //                 })
 //             })
@@ -228,7 +236,8 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes("invalid email/password")
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('invalid email/password')
 //                 done()
 //                 })
 //             })

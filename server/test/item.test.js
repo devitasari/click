@@ -74,7 +74,7 @@
 //     this.timeout(10000)
 //     describe('POST /items', function() {
 //         describe('success process', function() {
-//             it('should send an object (newItem, messagdone()e) with 201 status code', function(done) {
+//             it('should send an object (newItem, message) with 201 status code', function(done) {
 //                 chai.request(app)
 //                 .post('/click/items')
 //                 .set({ token: tokenAdmin })
@@ -89,9 +89,14 @@
 //                     expect(res).to.have.status(201)
 //                     expect(res.body).to.be.an('object')
 //                     expect(res.body).to.have.any.keys('newItem','message')
+//                     expect(res.body.newItem).to.have.any.keys('_id','name','description','image','price','stock','createdAt','updatedAt')
+//                     expect(res.body.newItem.name).to.equal('milk')
+//                     expect(res.body.newItem.description).to.equal('for adult only')
+//                     expect(res.body.newItem.price).to.equal(10000)
+//                     expect(res.body.newItem.stock).to.equal(10)
 //                     expect(res.body.message).to.equal('success add item')
+//                     done()
 //                 })
-//                 done()
 //             })
 //         })
 //         describe('errors process', function() {
@@ -126,7 +131,7 @@
 //                     done()
 //                 })
 //             })
-//             it('should send error with 500 status code because customer not authorize to add item', function(done) {
+//             it('should send error with 401 status code because customer not authorize to add item', function(done) {
 //                 chai.request(app)
 //                 .post('/click/items')
 //                 .set({ token: tokenCustomer })
@@ -137,8 +142,9 @@
 //                 .field('stock', '10')
 //                 .end(function (err,res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('restricted admin only')
+//                     expect(res).to.have.status(401)
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('restricted admin only')
 //                     done()
 //                 })   
 //             })
@@ -187,21 +193,22 @@
 //                     done() 
 //                 })
 //             })
-//             // it('should send error with 400 status code because missing price value', function(done) {
-//             //     chai.request(app)
-//             //     .post('/click/items')
-//             //     .set({ token: tokenAdmin })
-//             //     .attach('image', file, 'file.jpeg')
-//             //     .field('name', 'milk')
-//             //     .field('description', 'for adult only')
-//             //     .field('stock', '10')
-//             //     .end(function (err, res) {
-//             //         expect(err).to.be.null
-//             //         expect(res).to.have.status(400)
-//             //         expect(res.body.error).to.be.an('array').that.includes('price is required')
-//             //         done() 
-//             //     })
-//             // })
+//             it('should send error with 400 status code because missing price value', function(done) {
+//                 chai.request(app)
+//                 .post('/click/items')
+//                 .set({ token: tokenAdmin })
+//                 .attach('image', file, 'file.jpeg')
+//                 .field('name', 'milk')
+//                 .field('description', 'for adult only')
+//                 .field('stock', '10')
+//                 .end(function (err, res) {
+//                     expect(err).to.be.null
+//                     expect(res).to.have.status(400)
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0]).to.equal('Cast to Number failed for value "NaN" at path "price"')
+//                     done() 
+//                 })
+//             })
 //             it('should send error with 400 status code because missing stock value', function(done) {
 //                 chai.request(app)
 //                 .post('/click/items')
@@ -281,6 +288,11 @@
 //                     expect(res).to.have.status(200)
 //                     expect(res.body).to.be.an('object')
 //                     expect(res.body).to.have.any.keys('item')
+//                     expect(res.body.item).to.have.any.keys('_id','name','description','image','price','stock','createdAt','updatedAt')
+//                     expect(res.body.item.name).to.equal('milk')
+//                     expect(res.body.item.description).to.equal('for adult only')
+//                     expect(res.body.item.price).to.equal(10000)
+//                     expect(res.body.item.stock).to.equal(10)
 //                     done()
 //                 })
 //             })
@@ -293,6 +305,11 @@
 //                     expect(res).to.have.status(200)
 //                     expect(res.body).to.be.an('object')
 //                     expect(res.body).to.have.any.keys('item')
+//                     expect(res.body.item).to.have.any.keys('_id','name','description','image','price','stock','createdAt','updatedAt')
+//                     expect(res.body.item.name).to.equal('milk')
+//                     expect(res.body.item.description).to.equal('for adult only')
+//                     expect(res.body.item.price).to.equal(10000)
+//                     expect(res.body.item.stock).to.equal(10)
 //                     done()
 //                 })
 //             })
@@ -326,7 +343,8 @@
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('data not found')
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('data not found')
 //                     done() 
 //                 })
 //             })
@@ -347,6 +365,12 @@
 //                     expect(res).to.have.status(200)
 //                     expect(res.body).to.be.an('object')
 //                     expect(res.body).to.have.any.keys('item','message')
+//                     console.log(res.body.item)
+//                     expect(res.body.item).to.have.any.keys('_id','name','description','image','price','stock','createdAt','updatedAt')
+//                     expect(res.body.item.name).to.equal('milk')
+//                     expect(res.body.item.description).to.equal('for adult only')
+//                     expect(res.body.item.price).to.equal(10000)
+//                     expect(res.body.item.stock).to.equal(10)
 //                     expect(res.body.message).to.equal('success update item')
 //                     done()
 //                 })
@@ -382,7 +406,7 @@
 //                     done()
 //                 })
 //             })
-//             it('should send error with 500 status code because customer does not have authorization to update item', function(done) {
+//             it('should send error with 401 status code because customer does not have authorization to update item', function(done) {
 //                 chai.request(app)
 //                 .put(`/click/items/${id}`)
 //                 .set({ token: tokenCustomer })
@@ -392,8 +416,9 @@
 //                 .field('price', '1000')
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('restricted admin only')
+//                     expect(res).to.have.status(401)
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('restricted admin only')
 //                     done()
 //                 })
 //             })
@@ -408,7 +433,8 @@
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('data not found')
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('data not found')
 //                     done()
 //                 })
 //             })    
@@ -425,6 +451,11 @@
 //                     expect(res).to.have.status(200)
 //                     expect(res.body).to.be.an('object')
 //                     expect(res.body).to.have.any.keys('item','message')
+//                     expect(res.body.item).to.have.any.keys('_id','name','description','image','price','stock','createdAt','updatedAt')
+//                     expect(res.body.item.name).to.equal('milk')
+//                     expect(res.body.item.description).to.equal('for adult only')
+//                     expect(res.body.item.price).to.equal(10000)
+//                     expect(res.body.item.stock).to.equal(10)
 //                     expect(res.body.message).to.equal('success delete item')
 //                     done()
 //                 })
@@ -452,14 +483,15 @@
 //                     done()
 //                 })
 //             })
-//             it('should send error with 500 status code because customer does not have authorization to update item', function(done) {
+//             it('should send error with 401 status code because customer does not have authorization to update item', function(done) {
 //                 chai.request(app)
 //                 .delete(`/click/items/${id}`)
 //                 .set({ token: tokenCustomer })
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('restricted admin only')
+//                     expect(res).to.have.status(401)
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('restricted admin only')
 //                     done()
 //                 })
 //             })
@@ -470,7 +502,8 @@
 //                 .end(function (err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('data not found')
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('data not found')
 //                     done()
 //                 })
 //             })    

@@ -1,7 +1,7 @@
 function errorHandler(err, req, res, next) {
     
     let status, message, error = []
-     console.log(err)
+    //  console.log(err)
 
     if (err.name === 'ValidationError') {
         status = 400
@@ -15,7 +15,8 @@ function errorHandler(err, req, res, next) {
         status = 400
         error.push('login first')
     } else {
-        status = 500
+        if (err.status) status = err.status
+        else status = 500
         error.push(err)
     } 
 

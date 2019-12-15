@@ -79,7 +79,7 @@
 // })
 
 // describe('Cart CRUD', function() {
-//     // this.timeout(10000)
+//     this.timeout(10000)
 //     describe('POST /carts/id', function() {
 //         describe('succes process', function() {
 //             it('should send an object (newCart, message) with 201 status code', function(done) {
@@ -88,7 +88,7 @@
 //                 .set('token', tokenCustomer)
 //                 .send({
 //                     qty: 7,
-//                     status: true,
+//                     status: 'pending',
 //                 })
 //                 .end(function(err, res) {
 //                     cartId = res.body.newCart._id
@@ -96,43 +96,32 @@
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(201)
 //                     expect(res.body).to.be.an('object').to.have.any.keys('newCart','message')
-//                     expect(res.body.message).to.equal('succes add product to cart')
-//                     done()
-//                 })
-//             })
-//             it('should send an object (newCart, message) with 201 status code', function(done) {
-//                 chai.request(app)
-//                 .post(`/click/carts/${itemId}`)
-//                 .set('token', tokenCustomer)
-//                 .send({
-//                     qty: 4,
-//                     status: false,
-//                 })
-//                 .end(function(err, res) {
-//                     expect(err).to.be.null
-//                     expect(res).to.have.status(201)
-//                     expect(res.body).to.be.an('object').to.have.any.keys('newCart','message')
-//                     expect(res.body.message).to.equal('succes add product to cart')
-//                     done()
-//                 })
-//             })
-//             it('should send an object (newCart, message) with 201 status code', function(done) {
-//                 chai.request(app)
-//                 .post(`/click/carts/${itemId}`)
-//                 .set('token', tokenAdmin)
-//                 .send({
-//                     qty: 4
-//                 })
-//                 .end(function(err, res) {
-//                     expect(err).to.be.null
-//                     expect(res).to.have.status(201)
-//                     expect(res.body).to.be.an('object').to.have.any.keys('newCart','message')
+//                     expect(res.body.newCart).to.be.an('object').to.have.any.keys('status','_id','userId','itemId','qty','subPrice','createdAt','updatedAt')
+//                     expect(res.body.newCart.status).to.equal('pending')
+//                     expect(res.body.newCart.qty).to.equal(7)
+//                     expect(res.body.newCart.subPrice).to.equal(35000)
 //                     expect(res.body.message).to.equal('succes add product to cart')
 //                     done()
 //                 })
 //             })
 //         })
 //         describe('errors process', function() {
+//             it('should send an error response with status code 401 because admin don\'t have authorization to create cart', function(done) {
+//                 chai.request(app)
+//                 .post(`/click/carts/${itemId}`)
+//                 .set('token', tokenAdmin)
+//                 .send({
+//                     qty: 4,
+//                     status: 'pending'
+//                 })
+//                 .end(function(err, res) {
+//                     expect(err).to.be.null
+//                     expect(res).to.have.status(401)
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('restricted customer only')
+//                     done()
+//                 })
+//             })
 //             it('should send an error response with status code 500 because ivalid itemId', function(done) {
 //                 chai.request(app)
 //                 .post(`/click/carts/${falseId}`)
@@ -143,7 +132,8 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('data not found')
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('data not found')
 //                     done()
 //                 })
 //             })
@@ -157,7 +147,8 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('stock less than qty')
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('stock less than qty')
 //                     done()
 //                 })
 //             })
@@ -170,7 +161,6 @@
 //                 .get(`/click/carts`)
 //                 .set('token', tokenAdmin)
 //                 .end(function(err, res) {
-//                     console.log(res.body)
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(200)
 //                     expect(res.body).to.be.an('object').to.have.any.keys('carts')
@@ -179,14 +169,15 @@
 //             })
 //         })
 //         describe('errors process', function() { 
-//             it('should send an error response with status code 500 because customer not authorized', function(done) {
+//             it('should send an error response with status code 401 because customer not authorized', function(done) {
 //                 chai.request(app)
 //                 .get(`/click/carts`)
 //                 .set('token', tokenCustomer)
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('restricted admin only')
+//                     expect(res).to.have.status(401)
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('restricted admin only')
 //                     done()
 //                 })
 //             })
@@ -336,7 +327,7 @@
 //                     done()
 //                 })
 //             })
-//             it('should send an error response with status code 500 because invalid cartId', function(done) {
+//             it('should send an error response with status code 404 because invalid cartId', function(done) {
 //                 chai.request(app)
 //                 .put(`/click/carts/${falseId}`)
 //                 .set('token', tokenCustomer)
@@ -346,7 +337,7 @@
 //                 })
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(500)
+//                     expect(res).to.have.status(404)
 //                     done()
 //                 })
 //             })
@@ -361,7 +352,8 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(500)
-//                     expect(res.body.error).to.be.an('array').that.includes('stock less than qty')
+//                     expect(res.body.error).to.be.an('array')
+//                     expect(res.body.error[0].message).to.equal('stock less than qty')
 //                     done()
 //                 })
 //             })
@@ -376,7 +368,7 @@
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
 //                     expect(res).to.have.status(200)
-//                     expect(res.body).to.be.an('object').to.have.any.keys('cart', 'message')
+//                     expect(res.body).to.be.an('object').to.have.any.keys('message')
 //                     expect(res.body.message).to.equal('success delete cart')
 //                     done()
 //                 })
@@ -394,13 +386,13 @@
 //                     done()
 //                 })
 //             })
-//             it('should send an error response with status code 500 because invalid cartId', function(done) {
+//             it('should send an error response with status code 404 because invalid cartId', function(done) {
 //                 chai.request(app)
 //                 .delete(`/click/carts/${falseId}`)
 //                 .set('token', tokenCustomer)
 //                 .end(function(err, res) {
 //                     expect(err).to.be.null
-//                     expect(res).to.have.status(500)
+//                     expect(res).to.have.status(404)
 //                     done()
 //                 })
 //             })
